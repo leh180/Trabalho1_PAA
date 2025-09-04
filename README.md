@@ -54,8 +54,11 @@ Siga os passos abaixo para compilar e rodar o projeto.
     |   |-- rose/
     |   |-- ...
     |-- create_dataset.cpp
+    |-- DataStructure.hpp
+    |-- Lista.hpp
     |-- main.cpp
-    |-- ... (outros arquivos)
+    |-- stb_image.h
+    |-- Vector.hpp
     ```
 
     > **Nota:** Se você preferir usar um nome de pasta diferente ou um caminho em outro local, lembre-se de ajustar o comando no Passo 3.
