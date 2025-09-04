@@ -44,7 +44,7 @@ public:
         ultimo = primeiro;
     }
 
-    // ADICIONADO: Limpar a memória
+    // Limpar a memória
     ~Lista()
     {
         No *atual = primeiro;
