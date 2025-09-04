@@ -6,18 +6,18 @@ Trabalho prático da disciplina de Projeto e Análise de Algoritmos (2025/2)  [c
 
 ---
 
-## 📄 Descrição do Projeto
+## Descrição do Projeto
 
 Este projeto tem como objetivo realizar uma análise de custos computacionais, teórica e prática, de diferentes estruturas de dados aplicadas a um problema de busca por similaridade em um banco de dados de imagens. Cada imagem é representada por um vetor de características (cor RGB média), e o objetivo é encontrar as imagens mais "parecidas" com uma imagem de consulta.
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 -   **Processamento de Imagens:** Um utilitário em C++ que lê um diretório de imagens (`.jpg`, `.png`, etc.) e extrai um vetor de características (RGB médio) para cada uma, salvando em um arquivo `.csv`.
 -   **Busca Top-K:** Implementação de algoritmos para encontrar os *k* vizinhos mais próximos de um vetor de consulta.
 -   **Benchmarking:** O programa principal mede métricas de desempenho para cada busca, como tempo de execução (em milissegundos) e número de comparações de distância.
 -   **Geração de Relatório:** Os resultados dos experimentos são salvos em um arquivo `results.csv` para fácil análise e criação de gráficos.
 
-## implemented-structures Estruturas de Dados Implementadas
+## Estruturas de Dados Implementadas
 
 O trabalho completo envolve a análise das seguintes estruturas:
 
@@ -25,7 +25,7 @@ O trabalho completo envolve a análise das seguintes estruturas:
 -   [ ] **Quadtree/Octree:** (Status: A implementar)
 -   [ ] **Tabela Hash (LSH):** (Status: A implementar)
 
-## 🚀 Como Compilar e Executar
+## Como Compilar e Executar
 
 Siga os passos abaixo para compilar e rodar o projeto.
 
@@ -93,7 +93,7 @@ Execute o programa principal para realizar as buscas e gerar o relatório.
 
 Após a execução, um arquivo chamado `results.csv` será criado no diretório, contendo as métricas de desempenho para cada busca realizada.
 
-## 👥 Membros do Grupo
+## Membros do Grupo
 
 -   **Ana Cristina Martins Silva**
 -   **Kenia Teixeira de Paula Costa**
