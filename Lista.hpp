@@ -185,10 +185,6 @@ public:
         // A lista está vazia? true = sim, false = não
         return (primeiro == ultimo);
     }
-
-    // Os outros métodos (inserirInicio, remover*) não são necessários para a busca,
-    // mas podem ser mantidos aqui se você quiser, lembrando de ajustar o tipo
-    // do parâmetro 'Imagem' para 'FeatureVector'.
 };
 
 #endif // LISTA_HPP
