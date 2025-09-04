@@ -1,6 +1,6 @@
 # Análise de Estruturas de Dados para Busca de Similaridade em Imagens
 
-Trabalho prático da disciplina de Projeto e Análise de Algoritmos (2025/2)  [cite_start]do curso de Ciência da Computação da Pontifícia Universidade Católica de Minas Gerais (PUC Minas)[cite: 1, 2].
+Trabalho prático da disciplina de Projeto e Análise de Algoritmos (2025/2) do curso de Ciência da Computação da Pontifícia Universidade Católica de Minas Gerais (PUC Minas).
 
 **Professor:** Silvio Jamil F. Guimarães 
 
