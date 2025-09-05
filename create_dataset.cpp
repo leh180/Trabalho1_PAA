@@ -16,7 +16,7 @@ int main() {
     std::filesystem::path dataset_root_path = "./database_flowers";
 
     // Defina o nome do arquivo de saída.
-    std::string output_filename = "dataset_resultado.csv";
+    std::string output_filename = "dataset.csv";
 
 
     std::ofstream output_file(output_filename);
