@@ -23,7 +23,7 @@
 #include "Vector.hpp"          // Define o que é um FeatureVector
 #include "DataStructure.hpp"   // Define a interface que a Lista deve seguir
 #include "Lista.hpp"           // Implementação da Lista
-
+#include "Hash.hpp"
 /**
  * @brief Função auxiliar para carregar o dataset de um arquivo CSV.
  * @param filename O nome do arquivo CSV a ser lido (ex: "dataset.csv").
@@ -72,7 +72,7 @@ int main() {
     }
     std::cout << "   -> " << dataset.size() << " vetores carregados com sucesso." << std::endl << std::endl;
 
-    // --- ETAPA 2: PREPARAR A ESTRUTURA DE DADOS ---
+    // --- ETAPA 2.0: PREPARAR A ESTRUTURA DE DADOS ---
     std::cout << "2. Inserindo vetores na sua estrutura de dados 'Lista'..." << std::endl;
     
     Lista list_structure;
@@ -82,15 +82,23 @@ int main() {
     }
     std::cout << "   -> Insercao concluida." << std::endl << std::endl;
 
+    // --- ETAPA 2.1 PREPARAR A ESTRUTURA DE DADOS HASH ---
+    std::cout << "2.1 Inserindo vetores na sua estrutura de dados 'Hash' ..." << std::endl;
+    HashTable hash_structure(1013, 5, 25); //qiantidade de buckets
+    for(const auto& vec : dataset){
+        hash_structure.insert(vec);
+    }
+    std::cout << "  -> Insercao Hash concluida" << std::endl << std::endl;
+
     // --- ETAPA 3: PREPARAR O ARQUIVO DE SAÍDA ---
     std::string results_filename = "results.csv";
     std::ofstream results_file(results_filename);
     
-    results_file << "query_image_id,tempo_busca_ms,comparacoes,query_r,query_g,query_b,top_k_avg_similarity\n";
+    results_file << "estrutura,query_image_id,tempo_busca_ms,comparacoes,query_r,query_g,query_b,top_k_avg_similarity\n";
     std::cout << "3. Arquivo de resultados '" << results_filename << "' preparado." << std::endl << std::endl;
 
-    // --- ETAPA 4: EXECUTAR OS EXPERIMENTOS DE BUSCA ---
-    std::cout << "4. Executando as buscas por similaridade..." << std::endl;
+    // --- ETAPA 4.0: EXECUTAR OS EXPERIMENTOS DE BUSCA (Lista)---
+    std::cout << "4.0 Executando as buscas por similaridade (Lista)..." << std::endl;
     int k = 5; // O número de vizinhos mais próximos que queremos encontrar
     int num_queries = std::min((k*2), (int)dataset.size()); // Testaremos com as k*2 primeiras imagens
 
@@ -116,7 +124,8 @@ int main() {
         }
 
         // Grava a linha de resultado no arquivo CSV
-        results_file << query_vec.image_id << ","
+        results_file <<"Lista,"
+                     << query_vec.image_id << ","
                      << duration_ms.count() << ","
                      << result.comparisons << ","
                      << query_vec.r << ","
@@ -128,6 +137,40 @@ int main() {
                   << duration_ms.count() << " ms, " 
                   << result.comparisons << " comparacoes)" << std::endl;
     }
+
+    // --- ETAPA 4.1: EXECUTAR OS EXPERIMENTOS DE BUSCA (Hash)---
+    std::cout << "\n4.1 Executanto as buscas por similaridade (Hash)..." << std::endl;
+    for (int i = 0; i < num_queries; ++i){
+        const FeatureVector& query_vec = dataset[i];
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+        QueryResult result = hash_structure.query(query_vec, k);
+        auto end_time = std::chrono::high_resolution_clock::now();
+
+        auto duration_ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_time - start_time);
+        double total_similarity = 0.0;
+        if (!result.neighbors.empty()){
+            for(const auto& neighbor : result.neighbors){
+                total_similarity += query_vec.similarityTo(neighbor);
+            }
+            total_similarity /= result.neighbors.size();
+        }
+
+        results_file << "Hash,"
+                << query_vec.image_id << ","
+                << duration_ms.count() << ","
+                << result.comparisons << ","
+                << query_vec.r << ","
+                << query_vec.g << ","
+                << query_vec.b << ","
+                << total_similarity << "\n";
+
+            std::cout << "   -> Consulta com ID " << query_vec.image_id
+            << " concluida. (" << duration_ms.count()
+            << " ms, " << result.comparisons << " comparacoes)" << std::endl;
+    }
+    
+
 
     results_file.close();
     std::cout << "\n>> Experimentos finalizados com sucesso!" << std::endl;
