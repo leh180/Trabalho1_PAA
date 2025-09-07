@@ -102,6 +102,6 @@ Após a execução, um arquivo chamado `results.csv` será criado no diretório,
 -   **Kenia Teixeira de Paula Costa**
 -   **Letícia Azevedo Cota Barbosa**
 -   **Livia Alves Ferreira**
--   **Luiz Fernando ANtunes da Silva Frassi**
+-   **Luiz Fernando Antunes da Silva Frassi**
 -   **Pedro Augusto Gomes Ferreira de Albuquerque**
 -   **Pedro Henrique Gaioso de Oliveira**
