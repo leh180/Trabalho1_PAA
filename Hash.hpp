@@ -7,7 +7,7 @@
 
 #include "DataStructure.hpp"
 #include "Vector.hpp"
-
+// Estrutura que representa cada nó da tabela hash
 struct HashNode {
     FeatureVector data;
     HashNode* next;
@@ -21,7 +21,7 @@ struct HashNode {
         next = nullptr;
     }
 };
-
+// Classe que implementa a tabela hash
 class HashTable : public DataStructure {
 private:
     int numBuckets;
@@ -29,7 +29,7 @@ private:
     int binSize;
     std::vector<std::vector<HashNode*>> tables;
     int comparisons;
-
+    // Função hash que mapeia um vetor de características para um índice
     int hashFunction(const FeatureVector& vec, int seed) const {
         int r_bin = static_cast<int>((vec.r + seed) / binSize);
         int g_bin = static_cast<int>((vec.g + seed) / binSize);
@@ -39,11 +39,12 @@ private:
     }
 
 public:
+    // Construtor da tabela hash
     HashTable(int buckets = 1013, int hashes = 5, int bin = 25)
         : numBuckets(buckets), numHashes(hashes), binSize(bin), comparisons(0){
         tables.resize(numHashes, std::vector<HashNode*>(numBuckets, nullptr));
     }
-
+    // Destrutor da tabela hash
     ~HashTable() {
         for (int h = 0; h < numHashes; h++) {
             for (auto head : tables[h]) {
@@ -55,7 +56,7 @@ public:
             }
         }
     }
-
+    // Insere um vetor de características em todas as tabelas hash
     void insert(const FeatureVector& vec) override {
         for (int h = 0; h < numHashes; h++) {
             int idx = hashFunction(vec, h);
@@ -64,7 +65,7 @@ public:
             tables[h][idx] = node;
         }
     }
-
+    // Consulta os k vizinhos mais semelhantes de um vetor q
     QueryResult query(const FeatureVector& q, int k) override {
         QueryResult result;
         std::vector<FeatureVector> candidates;
@@ -83,15 +84,17 @@ public:
         }
         comparisons = candidates.size();
 
+        // Ordena os candidatos pelo grau de similaridade (maior primeiro)
         std::sort(candidates.begin(), candidates.end(), [&](const FeatureVector& a, const FeatureVector& b){
             return q.similarityTo(a) > q.similarityTo(b);
         });
 
+        // Adiciona os k mais semelhantes ao resultado
         for (int i = 0; i < std::min(k, (int)candidates.size()); i++) {
             result.neighbors.push_back(candidates[i]);
         }
 
-        result.comparisons = comparisons;
+        result.comparisons = comparisons;    // registra o número de comparações
         return result;
     }
 };
