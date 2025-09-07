@@ -15,7 +15,6 @@
 struct QueryResult {
     // Vetor com os vizinhos mais próximos encontrados
     std::vector<FeatureVector> neighbors;
-    // Contador de quantas comparações de distância foram necessárias para a busca.
     // Esta é uma métrica chave para a análise de custo prático.
     int comparisons = 0;
 };
