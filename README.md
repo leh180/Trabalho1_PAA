@@ -22,8 +22,8 @@ Este projeto tem como objetivo realizar uma análise de custos computacionais, t
 O trabalho completo envolve a análise das seguintes estruturas:
 
 -   [x] **Lista Duplamente Encadeada:** Implementação manual. (Status: Concluído)
--   [ ] **Quadtree/Octree:** (Status: A implementar)
--   [ ] **Tabela Hash (LSH):** (Status: A implementar)
+-   [x] **Quadtree/Octree:** (Status: A implementar)
+-   [x] **Tabela Hash (LSH):** (Status: A implementar)
 
 ## Como Compilar e Executar
 
