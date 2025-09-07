@@ -1,9 +1,17 @@
 // ----------------------------------------------------------------------------
-// Executor principal dos experimentos: Lista, Hash e Quadtree
+// Este programa é o executor principal do experimento de análise de algoritmos.
+// Ele foi projetado para testar o desempenho de uma estrutura de dados de busca
+// por similaridade. O fluxo é o seguinte:
+// 1. Carrega os vetores de características de imagens de um arquivo 'dataset.csv'.
+// 2. Insere todos esses vetores em uma estrutura de dados (da classe 'Lista').
+// 3. Seleciona algumas imagens do próprio dataset para servirem como consulta.
+// 4. Para cada consulta, mede o tempo de busca e o número de comparações.
+// 5. Salva essas métricas em um arquivo de resultados 'results.csv'.
 // ----------------------------------------------------------------------------
 
+//Bibliotecas necessárias
 #include <iostream>
-#include <vector>
+#include <vector> 
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -11,21 +19,25 @@
 #include <numeric>
 #include <algorithm>
 
-#include "Vector.hpp"        // Define FeatureVector (image_id, r, g, b, distanceTo/similarityTo)
-#include "DataStructure.hpp" // Interface comum
-#include "Lista.hpp"         // Implementação: Lista
-#include "Hash.hpp"          // Implementação: Hash
-#include "Quadtree.hpp"      // Implementação: Quadtree
-
-// Carrega dataset.csv
+// Arquivos do Projeto
+#include "Vector.hpp"          // Define o que é um FeatureVector
+#include "DataStructure.hpp"   // Define a interface que a Lista deve seguir
+#include "Lista.hpp"           // Implementação da Lista
+#include "Hash.hpp"
+#include "Quadtree.hpp"
+/**
+ * @brief Função auxiliar para carregar o dataset de um arquivo CSV.
+ * @param filename O nome do arquivo CSV a ser lido (ex: "dataset.csv").
+ * @return Um std::vector contendo todos os FeatureVectors lidos do arquivo.
+ */
 std::vector<FeatureVector> loadDatasetFromFile(const std::string& filename) {
     std::vector<FeatureVector> dataset;
     std::ifstream file(filename);
 
     if (!file.is_open()) {
-        std::cerr << "ERRO FATAL: Nao foi possivel abrir o arquivo de dataset '" << filename << "'.\n";
-        std::cerr << "Certifique-se de que o arquivo existe e esta na mesma pasta do executavel.\n";
-        return dataset;
+        std::cerr << "ERRO FATAL: Nao foi possivel abrir o arquivo de dataset '" << filename << "'." << std::endl;
+        std::cerr << "Certifique-se de que o arquivo existe e esta na mesma pasta do executavel." << std::endl;
+        return dataset; // Retorna o vetor vazio para indicar o erro
     }
 
     std::string line;
@@ -35,107 +47,173 @@ std::vector<FeatureVector> loadDatasetFromFile(const std::string& filename) {
         std::stringstream ss(line);
         std::string value;
         FeatureVector vec;
-
+        
         std::getline(ss, value, ','); vec.image_id = std::stoi(value);
         std::getline(ss, value, ','); vec.r = std::stod(value);
         std::getline(ss, value, ','); vec.g = std::stod(value);
-        std::getline(ss, value);      vec.b = std::stod(value);
-
+        std::getline(ss, value); vec.b = std::stod(value);
+        
         dataset.push_back(vec);
     }
-
+    
     file.close();
     return dataset;
 }
 
+// Ponto de entrada do programa
 int main() {
     // --- ETAPA 1: CARREGAR O DATASET ---
-    std::cout << ">> Iniciando experimento...\n";
-    std::cout << "1. Carregando vetores do arquivo 'dataset.csv'...\n";
+    std::cout << ">> Iniciando experimento..." << std::endl;
+    std::cout << "1. Carregando vetores do arquivo 'dataset.csv'..." << std::endl;
     std::vector<FeatureVector> dataset = loadDatasetFromFile("dataset.csv");
 
     if (dataset.empty()) {
-        std::cerr << "!! Experimento abortado: o dataset nao pode ser carregado.\n";
-        return 1;
+        std::cerr << "!! Experimento abortado: o dataset nao pode ser carregado." << std::endl;
+        return 1; // Erro
     }
-    std::cout << "   -> " << dataset.size() << " vetores carregados com sucesso.\n\n";
+    std::cout << "   -> " << dataset.size() << " vetores carregados com sucesso." << std::endl << std::endl;
 
-    // --- ETAPA 2.0: LISTA ---
-    std::cout << "2. Inserindo vetores na estrutura 'Lista'...\n";
+    // --- ETAPA 2.0: PREPARAR A ESTRUTURA DE DADOS ---
+    std::cout << "2. Inserindo vetores na sua estrutura de dados 'Lista'..." << std::endl;
+    
     Lista list_structure;
+    
     for (const auto& vec : dataset) {
         list_structure.insert(vec);
     }
-    std::cout << "   -> Insercao (Lista) concluida.\n\n";
+    std::cout << "   -> Insercao concluida." << std::endl << std::endl;
 
-    // --- ETAPA 2.1: HASH ---
-    std::cout << "2.1 Inserindo vetores na estrutura 'Hash'...\n";
-    HashTable hash_structure(1013, 5, 25); // ajuste conforme sua Hash.hpp
-    for (const auto& vec : dataset) {
+    // --- ETAPA 2.1 PREPARAR A ESTRUTURA DE DADOS HASH ---
+    std::cout << "2.1 Inserindo vetores na sua estrutura de dados 'Hash' ..." << std::endl;
+    HashTable hash_structure(1013, 5, 25); //quantidade de buckets
+    for(const auto& vec : dataset){
         hash_structure.insert(vec);
     }
-    std::cout << "   -> Insercao (Hash) concluida.\n\n";
+    std::cout << "  -> Insercao Hash concluida" << std::endl << std::endl;
 
-    // --- ETAPA 2.2: QUADTREE ---
-    std::cout << "2.2 Inserindo vetores na estrutura 'Quadtree'...\n";
+    // --- ETAPA 2.2 PREPARAR A ESTRUTURA DE DADOS QUADTREE ---
+    std::cout << "2.1 Inserindo vetores na sua estrutura de dados 'Quadtree' ..." << std::endl;
     Quadtree quad_structure; // conforme sua Quadtree.hpp
     for (const auto& vec : dataset) {
         quad_structure.insert(vec);
     }
-    std::cout << "   -> Insercao (Quadtree) concluida.\n\n";
+    std::cout << "  -> Insercao Quadtree concluida" << std::endl << std::endl;
 
-    // --- ETAPA 3: ARQUIVO DE SAIDA ---
+    // --- ETAPA 3: PREPARAR O ARQUIVO DE SAÍDA ---
     std::string results_filename = "results.csv";
     std::ofstream results_file(results_filename);
+    
     results_file << "estrutura,query_image_id,tempo_busca_ms,comparacoes,query_r,query_g,query_b,top_k_avg_similarity\n";
-    std::cout << "3. Arquivo de resultados '" << results_filename << "' preparado.\n\n";
+    std::cout << "3. Arquivo de resultados '" << results_filename << "' preparado." << std::endl << std::endl;
 
-    // --- Parâmetros de busca ---
-    int k = 5;
-    int num_queries = std::min(k * 2, (int)dataset.size()); // k*2 primeiras imagens
+    // --- ETAPA 4.0: EXECUTAR OS EXPERIMENTOS DE BUSCA (Lista)---
+    std::cout << "4.0 Executando as buscas por similaridade (Lista)..." << std::endl;
+    int k = 5; // O número de vizinhos mais próximos que queremos encontrar
+    int num_queries = std::min((k*2), (int)dataset.size()); // Testaremos com as k*2 primeiras imagens
 
-    // Helper para rodar e registrar um experimento
-    auto run_and_log = [&](const char* nome, DataStructure& ds) {
-        std::cout << "4.x Executando buscas por similaridade (" << nome << ")...\n";
-        for (int i = 0; i < num_queries; ++i) {
-            const FeatureVector& query_vec = dataset[i];
+    for (int i = 0; i < num_queries; ++i) {
+        const FeatureVector& query_vec = dataset[i];
 
-            auto start_time = std::chrono::high_resolution_clock::now();
-            QueryResult result = ds.query(query_vec, k);
-            auto end_time = std::chrono::high_resolution_clock::now();
-            auto duration_ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_time - start_time);
+        // Inicio da medição de tempo busca
+        auto start_time = std::chrono::high_resolution_clock::now();
+        
+        QueryResult result = list_structure.query(query_vec, k);
+        
+        // Fim da medição de tempo busca
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration_ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_time - start_time);
 
-            double total_similarity = 0.0;
-            if (!result.neighbors.empty()) {
-                for (const auto& neighbor : result.neighbors) {
-                    total_similarity += query_vec.similarityTo(neighbor);
-                }
-                total_similarity /= result.neighbors.size();
+        // Calcula a similaridade média dos vizinhos encontrados
+        double total_similarity = 0.0;
+        if (!result.neighbors.empty()) {
+            for (const auto& neighbor : result.neighbors) {
+                total_similarity += query_vec.similarityTo(neighbor);
             }
-
-            results_file << nome << ","
-                         << query_vec.image_id << ","
-                         << duration_ms.count() << ","
-                         << result.comparisons << ","
-                         << query_vec.r << ","
-                         << query_vec.g << ","
-                         << query_vec.b << ","
-                         << total_similarity << "\n";
-
-            std::cout << "   -> Consulta ID " << query_vec.image_id
-                      << " (" << duration_ms.count() << " ms, "
-                      << result.comparisons << " comparacoes)\n";
+            total_similarity /= result.neighbors.size();
         }
-        std::cout << "   -> (" << nome << ") concluido.\n\n";
-    };
 
-    // --- ETAPA 4: RODAR LISTA, HASH, QUADTREE ---
-    run_and_log("Lista",     list_structure);
-    run_and_log("Hash",      hash_structure);
-    run_and_log("Quadtree",  quad_structure);
+        // Grava a linha de resultado no arquivo CSV
+        results_file <<"Lista,"
+                     << query_vec.image_id << ","
+                     << duration_ms.count() << ","
+                     << result.comparisons << ","
+                     << query_vec.r << ","
+                     << query_vec.g << ","
+                     << query_vec.b << ","
+                     << total_similarity << "\n";
+        
+        std::cout << "   -> Consulta com ID " << query_vec.image_id << " concluida. (" 
+                  << duration_ms.count() << " ms, " 
+                  << result.comparisons << " comparacoes)" << std::endl;
+    }
+
+    // --- ETAPA 4.1: EXECUTAR OS EXPERIMENTOS DE BUSCA (Hash)---
+    std::cout << "\n4.1 Executanto as buscas por similaridade (Hash)..." << std::endl;
+    for (int i = 0; i < num_queries; ++i){
+        const FeatureVector& query_vec = dataset[i];
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+        QueryResult result = hash_structure.query(query_vec, k);
+        auto end_time = std::chrono::high_resolution_clock::now();
+
+        auto duration_ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_time - start_time);
+        double total_similarity = 0.0;
+        if (!result.neighbors.empty()){
+            for(const auto& neighbor : result.neighbors){
+                total_similarity += query_vec.similarityTo(neighbor);
+            }
+            total_similarity /= result.neighbors.size();
+        }
+
+        results_file << "Hash,"
+                << query_vec.image_id << ","
+                << duration_ms.count() << ","
+                << result.comparisons << ","
+                << query_vec.r << ","
+                << query_vec.g << ","
+                << query_vec.b << ","
+                << total_similarity << "\n";
+
+            std::cout << "   -> Consulta com ID " << query_vec.image_id
+            << " concluida. (" << duration_ms.count()
+            << " ms, " << result.comparisons << " comparacoes)" << std::endl;
+    }
+
+    // --- ETAPA 4.2: EXECUTAR OS EXPERIMENTOS DE BUSCA (Quadtree)---
+    std::cout << "\n4.1 Executanto as buscas por similaridade (Quadtree)..." << std::endl;
+    for (int i = 0; i < num_queries; ++i){
+        const FeatureVector& query_vec = dataset[i];
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+        QueryResult result = quad_structure.query(query_vec, k);
+        auto end_time = std::chrono::high_resolution_clock::now();
+
+        auto duration_ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_time - start_time);
+        double total_similarity = 0.0;
+        if (!result.neighbors.empty()){
+            for(const auto& neighbor : result.neighbors){
+                total_similarity += query_vec.similarityTo(neighbor);
+            }
+            total_similarity /= result.neighbors.size();
+        }
+
+        results_file << "Quadtree,"
+                << query_vec.image_id << ","
+                << duration_ms.count() << ","
+                << result.comparisons << ","
+                << query_vec.r << ","
+                << query_vec.g << ","
+                << query_vec.b << ","
+                << total_similarity << "\n";
+
+            std::cout << "   -> Consulta com ID " << query_vec.image_id
+            << " concluida. (" << duration_ms.count()
+            << " ms, " << result.comparisons << " comparacoes)" << std::endl;
+    }
 
     results_file.close();
-    std::cout << "\n>> Experimentos finalizados com sucesso!\n";
-    std::cout << "   Resultados salvos em '" << results_filename << "'.\n";
+    std::cout << "\n>> Experimentos finalizados com sucesso!" << std::endl;
+    std::cout << "   Resultados salvos em '" << results_filename << "'." << std::endl;
+
     return 0;
 }
