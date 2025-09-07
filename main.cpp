@@ -62,7 +62,7 @@ std::vector<FeatureVector> loadDatasetFromFile(const std::string& filename) {
 
 // Ponto de entrada do programa
 int main() {
-    // --- ETAPA 1: CARREGAR O DATASET ---
+    // CARREGAR O DATASET
     std::cout << ">> Iniciando experimento..." << std::endl;
     std::cout << "1. Carregando vetores do arquivo 'dataset.csv'..." << std::endl;
     std::vector<FeatureVector> dataset = loadDatasetFromFile("dataset.csv");
@@ -73,7 +73,7 @@ int main() {
     }
     std::cout << "   -> " << dataset.size() << " vetores carregados com sucesso." << std::endl << std::endl;
 
-    // --- ETAPA 2.0: PREPARAR A ESTRUTURA DE DADOS ---
+    // PREPARAR A ESTRUTURA DE DADOS
     std::cout << "2. Inserindo vetores na sua estrutura de dados 'Lista'..." << std::endl;
     
     Lista list_structure;
@@ -83,7 +83,7 @@ int main() {
     }
     std::cout << "   -> Insercao concluida." << std::endl << std::endl;
 
-    // --- ETAPA 2.1 PREPARAR A ESTRUTURA DE DADOS HASH ---
+    // PREPARAR A ESTRUTURA DE DADOS HASH
     std::cout << "2.1 Inserindo vetores na sua estrutura de dados 'Hash' ..." << std::endl;
     HashTable hash_structure(1013, 5, 25); //quantidade de buckets
     for(const auto& vec : dataset){
@@ -91,7 +91,7 @@ int main() {
     }
     std::cout << "  -> Insercao Hash concluida" << std::endl << std::endl;
 
-    // --- ETAPA 2.2 PREPARAR A ESTRUTURA DE DADOS QUADTREE ---
+    // PREPARAR A ESTRUTURA DE DADOS QUADTREE
     std::cout << "2.1 Inserindo vetores na sua estrutura de dados 'Quadtree' ..." << std::endl;
     Quadtree quad_structure; // conforme sua Quadtree.hpp
     for (const auto& vec : dataset) {
@@ -99,14 +99,14 @@ int main() {
     }
     std::cout << "  -> Insercao Quadtree concluida" << std::endl << std::endl;
 
-    // --- ETAPA 3: PREPARAR O ARQUIVO DE SAÍDA ---
+    // PREPARAR O ARQUIVO DE SAÍDA
     std::string results_filename = "results.csv";
     std::ofstream results_file(results_filename);
     
     results_file << "estrutura,query_image_id,tempo_busca_ms,comparacoes,query_r,query_g,query_b,top_k_avg_similarity\n";
     std::cout << "3. Arquivo de resultados '" << results_filename << "' preparado." << std::endl << std::endl;
 
-    // --- ETAPA 4.0: EXECUTAR OS EXPERIMENTOS DE BUSCA (Lista)---
+    // EXECUTAR OS EXPERIMENTOS DE BUSCA (Lista)
     std::cout << "4.0 Executando as buscas por similaridade (Lista)..." << std::endl;
     int k = 5; // O número de vizinhos mais próximos que queremos encontrar
     int num_queries = std::min((k*2), (int)dataset.size()); // Testaremos com as k*2 primeiras imagens
@@ -147,7 +147,7 @@ int main() {
                   << result.comparisons << " comparacoes)" << std::endl;
     }
 
-    // --- ETAPA 4.1: EXECUTAR OS EXPERIMENTOS DE BUSCA (Hash)---
+    // EXECUTAR OS EXPERIMENTOS DE BUSCA (Hash)
     std::cout << "\n4.1 Executanto as buscas por similaridade (Hash)..." << std::endl;
     for (int i = 0; i < num_queries; ++i){
         const FeatureVector& query_vec = dataset[i];
@@ -179,7 +179,7 @@ int main() {
             << " ms, " << result.comparisons << " comparacoes)" << std::endl;
     }
 
-    // --- ETAPA 4.2: EXECUTAR OS EXPERIMENTOS DE BUSCA (Quadtree)---
+    // EXECUTAR OS EXPERIMENTOS DE BUSCA (Quadtree)
     std::cout << "\n4.1 Executanto as buscas por similaridade (Quadtree)..." << std::endl;
     for (int i = 0; i < num_queries; ++i){
         const FeatureVector& query_vec = dataset[i];
