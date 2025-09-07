@@ -24,6 +24,7 @@
 #include "DataStructure.hpp"   // Define a interface que a Lista deve seguir
 #include "Lista.hpp"           // Implementação da Lista
 #include "Hash.hpp"
+#include "Quadtree.hpp"
 /**
  * @brief Função auxiliar para carregar o dataset de um arquivo CSV.
  * @param filename O nome do arquivo CSV a ser lido (ex: "dataset.csv").
@@ -84,11 +85,19 @@ int main() {
 
     // --- ETAPA 2.1 PREPARAR A ESTRUTURA DE DADOS HASH ---
     std::cout << "2.1 Inserindo vetores na sua estrutura de dados 'Hash' ..." << std::endl;
-    HashTable hash_structure(1013, 5, 25); //qiantidade de buckets
+    HashTable hash_structure(1013, 5, 25); //quantidade de buckets
     for(const auto& vec : dataset){
         hash_structure.insert(vec);
     }
     std::cout << "  -> Insercao Hash concluida" << std::endl << std::endl;
+
+    // --- ETAPA 2.2 PREPARAR A ESTRUTURA DE DADOS QUADTREE ---
+    std::cout << "2.1 Inserindo vetores na sua estrutura de dados 'Quadtree' ..." << std::endl;
+    Quadtree quad_structure; // conforme sua Quadtree.hpp
+    for (const auto& vec : dataset) {
+        quad_structure.insert(vec);
+    }
+    std::cout << "  -> Insercao Quadtree concluida" << std::endl << std::endl;
 
     // --- ETAPA 3: PREPARAR O ARQUIVO DE SAÍDA ---
     std::string results_filename = "results.csv";
@@ -169,8 +178,38 @@ int main() {
             << " concluida. (" << duration_ms.count()
             << " ms, " << result.comparisons << " comparacoes)" << std::endl;
     }
-    
 
+    // --- ETAPA 4.2: EXECUTAR OS EXPERIMENTOS DE BUSCA (Quadtree)---
+    std::cout << "\n4.1 Executanto as buscas por similaridade (Quadtree)..." << std::endl;
+    for (int i = 0; i < num_queries; ++i){
+        const FeatureVector& query_vec = dataset[i];
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+        QueryResult result = quad_structure.query(query_vec, k);
+        auto end_time = std::chrono::high_resolution_clock::now();
+
+        auto duration_ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end_time - start_time);
+        double total_similarity = 0.0;
+        if (!result.neighbors.empty()){
+            for(const auto& neighbor : result.neighbors){
+                total_similarity += query_vec.similarityTo(neighbor);
+            }
+            total_similarity /= result.neighbors.size();
+        }
+
+        results_file << "Quadtree,"
+                << query_vec.image_id << ","
+                << duration_ms.count() << ","
+                << result.comparisons << ","
+                << query_vec.r << ","
+                << query_vec.g << ","
+                << query_vec.b << ","
+                << total_similarity << "\n";
+
+            std::cout << "   -> Consulta com ID " << query_vec.image_id
+            << " concluida. (" << duration_ms.count()
+            << " ms, " << result.comparisons << " comparacoes)" << std::endl;
+    }
 
     results_file.close();
     std::cout << "\n>> Experimentos finalizados com sucesso!" << std::endl;
